@@ -1,5 +1,5 @@
  \
- C:/git_hub/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/arduino_wiring_digital.c.o:  \
+ C:/github/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/arduino_wiring_digital.c.o:  \
  C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/wiring_digital.c \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/wiring_private.h \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/Arduino.h \

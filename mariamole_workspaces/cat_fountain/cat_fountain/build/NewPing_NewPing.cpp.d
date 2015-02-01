@@ -1,7 +1,7 @@
  \
- C:/git_hub/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/NewPing_NewPing.cpp.o:  \
- C:\git_hub\arduino\libs/NewPing/NewPing.cpp \
-  C:\git_hub\arduino\libs/NewPing/NewPing.h \
+ C:/github/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/NewPing_NewPing.cpp.o:  \
+ C:/github/arduino/libs/NewPing/NewPing.cpp \
+  C:/github/arduino/libs/NewPing/NewPing.h \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/Arduino.h \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/binary.h \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/WCharacter.h \

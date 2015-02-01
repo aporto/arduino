@@ -11,8 +11,8 @@
 
 #define RELAY_PIN  13 
 
-#define TIME_TO_DRINK		60	// seconds
-#define TIME_BETWEEN_CHECKS	10	// seconds
+const unsigned long TIME_TO_DRINK =			60000;	// miliseconds
+const unsigned long TIME_BETWEEN_CHECKS =	2000;	// miliseconds
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
@@ -27,18 +27,18 @@ bool CheckIfTheCatIsAround()
 	Serial.print("cm");
 	Serial.println();
 	
-	//return ((cm > 5) && (cm < 30));	
-	return (cm < 30);	
+	return ((cm > 0) && (cm < 30));	
+	//return (cm < 30);	
 }
 
 //---------------------------------------------------------------------------
 
 bool TurnPumpOn(bool on)
 {
-	if (on) {
-		digitalWrite(RELAY_PIN, 0);
+	if (on == false) { // relay uses inverted logic
+		digitalWrite(RELAY_PIN, HIGH);
 	} else {
-		digitalWrite(RELAY_PIN, 1);
+		digitalWrite(RELAY_PIN, LOW);
 	}
 }
 
@@ -48,6 +48,9 @@ void setup() {
 	pinMode(RELAY_PIN, OUTPUT);     
 	TurnPumpOn(false);
 	Serial.begin(9600);	
+	delay(1000);
+	TurnPumpOn(false);
+	delay(2000);
 	//while (!Serial) ; // Leonardo is a jerk
 }
 
@@ -59,11 +62,11 @@ void loop() {
 	if (turnOn) {
 		Serial.println("Gato apareceu");
 		TurnPumpOn(true);
-		delay(TIME_TO_DRINK * 1000);
-		TurnPumpOn(false);
+		delay(TIME_TO_DRINK);		
 	}
+	TurnPumpOn(false);
 	Serial.println("Waiting...");
-	delay(TIME_BETWEEN_CHECKS * 1000);            	
+	delay(TIME_BETWEEN_CHECKS);            	
 }
 
 //---------------------------------------------------------------------------

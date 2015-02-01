@@ -1,5 +1,5 @@
  \
- C:/git_hub/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/arduino_Print.cpp.o:  \
+ C:/github/arduino/mariamole_workspaces/cat_fountain/cat_fountain/build/arduino_Print.cpp.o:  \
  C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/Print.cpp \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/Arduino.h \
   C:/Program\ Files\ (x86)/MariaMole\ Beta/arduino/hardware/arduino/cores/arduino/binary.h \
