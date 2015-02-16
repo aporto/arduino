@@ -25,5 +25,17 @@ import sys
 #midifile = sys.argv[1]
 midifile = "C:\\dados\\audio\\midi\\rush - tom sawyer - synth.mid"
 pattern = midi.read_midifile(midifile)
-print repr(pattern)
+#print repr(pattern)
 
+events=[]
+for track in pattern:
+    for event in track:
+        events.append(event)
+
+events.sort()
+for event in events:
+    print event
+
+event.tick
+event.pitch
+event.channel
