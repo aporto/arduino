@@ -26,3 +26,4 @@
 *.exe
 *.out
 *.app
+/mariamole_workspaces/cat_automation/scare_cat/build

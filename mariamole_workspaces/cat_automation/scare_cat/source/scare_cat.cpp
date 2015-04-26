@@ -44,7 +44,7 @@ void Calibrate(void)
 		delay(100);
 	}
 	
-	maxDistance = int(0.7f * float(maxDistance));
+	maxDistance = int(0.95f * float(maxDistance));
 	
 	Serial.print("Calibrated at: ");
 	Serial.print(maxDistance);
