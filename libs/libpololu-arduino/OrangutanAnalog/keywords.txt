@@ -1,0 +1,35 @@
+#######################################
+# Syntax Coloring Map OrangutanAnalog
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+OrangutanAnalog	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setMode	KEYWORD2
+getMode	KEYWORD2
+read	KEYWORD2
+readAvg	KEYWORD2
+readTrimpot	KEYWORD2
+readTemperatureF	KEYWORD2
+readTemperatureC	KEYWORD2
+readBatteryMillivolts	KEYWORD2
+startConversion	KEYWORD2
+isConverting	KEYWORD2
+conversionResult	KEYWORD2
+toMillivolts	KEYWORD2	
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+MODE_8_BIT	LITERAL1
+MODE_10_BIT	LITERAL1
+TRIMPOT	LITERAL1
+TEMP_SENSOR	LITERAL1

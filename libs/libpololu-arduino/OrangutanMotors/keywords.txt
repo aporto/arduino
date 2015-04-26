@@ -1,0 +1,21 @@
+#######################################
+# Syntax Coloring Map OrangutanMotors
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+OrangutanMotors	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setM1Speed	KEYWORD2
+setM2Speed	KEYWORD2
+setSpeeds	KEYWORD2	
+
+#######################################
+# Constants (LITERAL1)
+#######################################
