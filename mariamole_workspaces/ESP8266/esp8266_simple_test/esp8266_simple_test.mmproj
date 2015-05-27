@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="0" serial_port="COM4" programmer="" board="Arduino Mega (ATmega1280)" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="ESP8266_SimpleTEst.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="yes"/>
+    </files>
+    <externals/>
+</mm_project>
