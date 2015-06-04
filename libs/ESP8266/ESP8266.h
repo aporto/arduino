@@ -61,7 +61,7 @@ class ESP8266 {
 
 #else /* HardwareSerial */
     /*
-     * Constuctor. 
+     * Constuctor.  
      *
      * @param uart - an reference of HardwareSerial object. 
      * @param baud - the buad rate to communicate with ESP8266(default:9600). 

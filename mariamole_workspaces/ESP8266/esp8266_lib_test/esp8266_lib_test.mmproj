@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM1" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/ESP8266;$(LIBRARIES)/ESP8266doc;$(LIBRARIES)/ESP8266doc/API-html" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM1" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/ESP8266;$(LIBRARIES)/ESP8266doc;$(LIBRARIES)/ESP8266doc/API-html" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
     <files>
-        <file name="ESP8266_teste.cpp" open="yes"/>
+        <file name="ESP8266_teste.cpp" open="no"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
