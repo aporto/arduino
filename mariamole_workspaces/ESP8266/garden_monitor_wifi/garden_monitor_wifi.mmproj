@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM4" programmer="" board="Arduino Mega (ATmega1280)" includePaths=";$(LIBRARIES)/ESP8266;$(LIBRARIES)/ESP8266/doc;$(LIBRARIES)/ESP8266/doc/API-html" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="garden_monitor_wifi.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="ESP8266/doxygen.h" open="no"/>
+        <external name="ESP8266/ESP8266.cpp" open="no"/>
+        <external name="ESP8266/ESP8266.h" open="no"/>
+    </externals>
+</mm_project>
