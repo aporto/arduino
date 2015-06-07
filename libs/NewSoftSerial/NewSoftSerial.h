@@ -28,6 +28,7 @@ http://arduiniana.org.
 #ifndef NewSoftSerial_h
 #define NewSoftSerial_h
 
+#include <arduino.h>
 #include <inttypes.h>
 #include "Print.h"
 

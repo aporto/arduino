@@ -34,9 +34,10 @@ http://arduiniana.org.
 // 
 // Includes
 // 
+
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include "WConstants.h"
+#include "arduino.h"
 #include "pins_arduino.h"
 #include "NewSoftSerial.h"
 
