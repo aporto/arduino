@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM3" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="353115" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM11" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="353115" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="cat_fountain.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
-        <external name="NewPing/NewPing.cpp" open="yes"/>
+        <external name="NewPing/NewPing.cpp" open="no"/>
         <external name="NewPing/NewPing.h" open="no"/>
     </externals>
 </mm_project>

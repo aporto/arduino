@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mm_project current="0" serial_port="COM9" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Servo;$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="20604035" serialPortSpeed="9600" isLibrary="0">
     <files>
-        <file name="scare_cat.cpp" open="no"/>
+        <file name="scare_cat.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
         <external name="Servo/Servo.cpp" open="no"/>
         <external name="Servo/Servo.h" open="no"/>
-        <external name="NewPing/NewPing.cpp" open="yes"/>
+        <external name="NewPing/NewPing.cpp" open="no"/>
         <external name="NewPing/NewPing.h" open="no"/>
     </externals>
 </mm_project>
