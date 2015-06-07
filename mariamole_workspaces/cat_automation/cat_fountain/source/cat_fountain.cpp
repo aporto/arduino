@@ -12,7 +12,9 @@
 #define RELAY_PIN  11 
 
 const unsigned long TIME_TO_DRINK =			60000;	// miliseconds
-const unsigned long TIME_BETWEEN_CHECKS =	2000;	// miliseconds
+const unsigned long TIME_BETWEEN_CHECKS =	1000;	// miliseconds
+
+bool firstTeste = true;
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
@@ -64,24 +66,26 @@ void setup() {
 	}
 	digitalWrite(13, LOW);
 	
-	//TurnPumpOn(true);
-	
 	Serial.begin(9600);	
 	
-	while (!Serial); // Leonardo is a jerk
+	//while (!Serial); // Leonardo is a jerk
 }
 
 //---------------------------------------------------------------------------
 
 void loop() {
-	//return;
 	
 	bool turnOn = CheckIfTheCatIsAround();	
 	
 	if (turnOn) {
 		Serial.println("Gato apareceu");
 		TurnPumpOn(true);
-		delay(TIME_TO_DRINK);		
+		if (firstTeste) {
+			delay(2000);
+			firstTeste = false;
+		} else {
+			delay(TIME_TO_DRINK);		
+		}
 	}
 	TurnPumpOn(false);
 	Serial.println("Waiting...");
