@@ -23,7 +23,7 @@
 
 #include "Arduino.h"
 
-//#define ESP8266_USE_SOFTWARE_SERIAL
+#define ESP8266_USE_SOFTWARE_SERIAL
 
 #ifdef ESP8266_USE_SOFTWARE_SERIAL
 #include "SoftwareSerial.h"

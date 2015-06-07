@@ -23,6 +23,8 @@
 
 #define LOG_OUTPUT_DEBUG            (1)
 #define LOG_OUTPUT_DEBUG_PREFIX     (1)
+#define ESP8266_USE_SOFTWARE_SERIAL
+
 
 #define logDebug(arg)\
     do {\
