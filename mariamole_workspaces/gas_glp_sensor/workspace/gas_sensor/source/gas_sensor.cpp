@@ -4,8 +4,9 @@
 
 //---------------------------------------------------------------------------
 
-#define ALARM_PERIOD		100
-#define ALARM_PIN			10
+#define ALARM_PERIOD			100
+#define SOUND_ALARM_PIN			10
+#define LED_ALARM_PIN			8
 
 char alarmMode = 0;
 unsigned long lastAlarmPhaseCounter;
@@ -18,7 +19,8 @@ void setAlarm(bool start)
 		alarmMode = 0;
 		lastAlarmPhaseCounter = 0;
 	} else {
-		analogWrite(ALARM_PIN, 0);
+		analogWrite(SOUND_ALARM_PIN, 0);
+		analogWrite(LED_ALARM_PIN, 0);
 	}
 	
 	alarm = start;
@@ -27,7 +29,8 @@ void setAlarm(bool start)
 
 void setup() {
   Serial.begin(9600);
-	pinMode(ALARM_PIN, OUTPUT);    
+	pinMode(SOUND_ALARM_PIN, OUTPUT);    
+	pinMode(LED_ALARM_PIN, OUTPUT);    
 	setAlarm(true);	
 }
 
@@ -56,14 +59,17 @@ void loop() {
 				alarmMode = 0;							
 			}
 			if (alarmMode == 0) {
-				analogWrite(ALARM_PIN, 127);
+				analogWrite(SOUND_ALARM_PIN, 127);
+				digitalWrite(LED_ALARM_PIN, HIGH);
 			} else {
-				analogWrite(ALARM_PIN, 200);
+				analogWrite(SOUND_ALARM_PIN, 200);
+				digitalWrite(LED_ALARM_PIN, LOW);
 			}
 			lastAlarmPhaseCounter = millis();
 		}		
 	} else {
-		analogWrite(ALARM_PIN, 0);
+		analogWrite(SOUND_ALARM_PIN, 0);
+		digitalWrite(LED_ALARM_PIN, LOW);
 	}
 
 	delay(200);	
