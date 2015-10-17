@@ -1,0 +1,24 @@
+###################################
+# Syntax Coloring Map For NewPing
+###################################
+
+###################################
+# Datatypes (KEYWORD1)
+###################################
+
+MiniKeyboard	KEYWORD1
+
+###################################
+# Methods and Functions (KEYWORD2)
+###################################
+
+Up		KEYWORD2
+Down	KEYWORD2
+Left	KEYWORD2
+Right	KEYWORD2
+Enter	KEYWORD2
+ESC		KEYWORD2
+
+###################################
+# Constants (LITERAL1)
+###################################

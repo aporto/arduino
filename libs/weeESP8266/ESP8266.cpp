@@ -18,13 +18,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+ 
+#define ESP8266_USE_SOFTWARE_SERIAL
+
 #include "ESP8266.h"
 #include <avr/pgmspace.h>
 
 #define LOG_OUTPUT_DEBUG            (1)
 #define LOG_OUTPUT_DEBUG_PREFIX     (1)
-#define ESP8266_USE_SOFTWARE_SERIAL
-
 
 #define logDebug(arg)\
     do {\
@@ -160,6 +161,16 @@ bool ESP8266::setOprToStationSoftAP(uint8_t pattern1,uint8_t pattern2)
         } else {
             return false;
         }
+    }
+}
+
+uint8_t ESP8266::getOprMode(uint8_t pattern1)
+{
+	uint8_t mode;
+	if (!qATCWMODE(&mode,pattern1)) {
+        return 0;
+    } else {
+		return mode;
     }
 }
 
