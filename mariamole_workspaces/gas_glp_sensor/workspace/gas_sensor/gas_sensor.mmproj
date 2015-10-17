@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM10" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="20145347" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM10" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="20145347" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="gas_sensor.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM7" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="13398757" serialPortSpeed="9600" isLibrary="204">
+    <files>
+        <file name="arduino_mouse.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="MiniKeyboard/MiniKeyboard.cpp" open="no"/>
+        <external name="MiniKeyboard/MiniKeyboard.h" open="no"/>
+    </externals>
+</mm_project>

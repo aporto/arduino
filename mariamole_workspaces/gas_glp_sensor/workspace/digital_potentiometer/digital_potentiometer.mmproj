@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="0" serial_port="" programmer="" board="Arduino Diecimila or Duemilanove w/ ATmega168" includePaths=";$(LIBRARIES)/Wire;$(LIBRARIES)/Wire/utility" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1604913184" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="digital_potentiometer.cpp" open="no"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Wire/utility/twi.c" open="no"/>
+        <external name="Wire/utility/twi.h" open="no"/>
+        <external name="Wire/Wire.cpp" open="no"/>
+        <external name="Wire/Wire.h" open="no"/>
+    </externals>
+</mm_project>
