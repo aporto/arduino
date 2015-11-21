@@ -392,6 +392,10 @@ void DisplayImage(void)
 			if (expectedDelay > deltaTime) {
 				delay (expectedDelay - deltaTime);
 			}
+			key.ReadPins();					
+			if (key.Enter() ) {
+				break;
+			}
 		}
 		
 		if (extrapolation == 0) {
@@ -412,14 +416,10 @@ void DisplayImage(void)
 			}
 		}
 		
-		key.ReadPins();			
 		
-		if (key.Enter() ) {
-			break;
-		}
 	} while (true);
 	
-	memset(leds, sizeof(leds), 0);
+	memset(leds, 0, sizeof(leds));
 	DisplaySingleLedRow();	
 }
 
