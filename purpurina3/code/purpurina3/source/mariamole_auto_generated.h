@@ -41,5 +41,8 @@
 #include <SdFatmainpage.h>
 #include <SdFatUtil.h>
 #include <SdInfo.h>
+#include <StackCheck.h>
+#include <MemoryFree.h>
+#include <EEPROM.h>
 
 #endif

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM14" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="1" serial_port="COM14" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility;$(LIBRARIES)/StackCheck;$(LIBRARIES)/EEPROM" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="purpurina3.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>
@@ -22,5 +22,11 @@
         <external name="SD/utility/SdFile.cpp" open="no"/>
         <external name="SD/utility/SdInfo.h" open="no"/>
         <external name="SD/utility/SdVolume.cpp" open="no"/>
+        <external name="StackCheck/StackCheck.cpp" open="yes"/>
+        <external name="StackCheck/StackCheck.h" open="no"/>
+        <external name="MemoryFree/MemoryFree.cpp" open="yes"/>
+        <external name="MemoryFree/MemoryFree.h" open="no"/>
+        <external name="EEPROM/EEPROM.cpp" open="no"/>
+        <external name="EEPROM/EEPROM.h" open="no"/>
     </externals>
 </mm_project>

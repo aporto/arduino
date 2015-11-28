@@ -2,6 +2,7 @@
 #include "mariamole_auto_generated.h"
 
 //---------------------------------------------------------------------------
+#define PRO_MINI
 
 #define lcd_rs	32
 #define lcd_en	34
@@ -10,11 +11,20 @@
 #define lcd_d6	33
 #define lcd_d7	35
 
-#define key_pin_1	27
-#define key_pin_2	25
-#define key_pin_3	26
-#define key_pin_4	24
-#define key_pin_6	22
+#define key_pin_1		43	//27
+#define key_pin_2		41 	//25
+#define key_pin_3		42	//26
+#define key_pin_4		40	//24
+#define key_pin_6		38	//22
+
+#define STRIP_CKI		47 //41
+#define STRIP_SDI		46 //40
+
+#define LCD_LED_PIN		7
+
+#define SD_CHIP_SELECT	53
+
+#define SPEAKER_PIN	8
 
 #define mode_menu
 
@@ -24,11 +34,15 @@
 #define menu_extrapolation	3
 #define menu_mirror			4
 #define menu_start_delay	5
-#define menu_end			6
+#define menu_use_sound		6
+#define menu_keep_lcd_led	7
+#define menu_save_config	8
+#define menu_end			9
 
-#define STRIP_LENGTH 	32
-#define STRIP_CKI		41
-#define STRIP_SDI		40
+#define STRIP_LENGTH 		32
+
+#define  TONE_1     3830    // 261 Hz
+#define  TONE_2     1912        // 294 Hz 
 
 
 //---------------------------------------------------------------------------
@@ -38,8 +52,10 @@ MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
 
 //byte mode = mode_menu;
 
-const char menu_titles[menu_end][15] = {"Image", "Speed", "Led brightness", "Extrapolation", "Mirror", "Start delay"};
-const char YES_NO[2][4] = {"No", "Yes"};
+const char menu_titles[menu_end][15] = {"Image", "Speed", "Led brightness", 
+										"Extrapolation", "Mirror", "Start delay", 
+										"Sound volume", "Keep LCD Light", "Save config."};
+const char YES_NO[2][4] = {"No", "Yes"};			  
 
 uint8_t imageName[13] = "image.bmp";
 unsigned char speed = 100;
@@ -47,8 +63,11 @@ unsigned char ledBrightness = 80;
 char extrapolation = 0;
 char mirror = 0;
 char startDelay = 0;
+char soundVolume = 0;
+char keepLCDLight = 0;
 
 bool error = false;
+
 
 File root;
 File imgFile;
@@ -58,6 +77,46 @@ long int sdFileCount = 0;
 uint8_t leds[STRIP_LENGTH][3];
 
 //int temp; //inicia uma variável inteira(temp), para escrever no lcd a contagem do tempo
+
+void playTone(int tone, int duration) 
+{
+	analogWrite(SPEAKER_PIN, 0);    
+	unsigned long time1 = millis();
+	unsigned long deltaTime = millis() - time1;		
+	while (duration > deltaTime) {
+		analogWrite(SPEAKER_PIN, 255 * soundVolume / 100);
+		delayMicroseconds(tone);
+		analogWrite(SPEAKER_PIN, 0);
+		delayMicroseconds(tone);
+		
+		deltaTime = millis() - time1;		
+	}
+}
+
+/*void playTone2(int tone, int duration) {
+	if (!useSound) {
+		return;
+	}
+	long elapsed_time = 0;
+	if (tone > 0) { // if this isn't a Rest beat, while the tone has
+		//  played less long than 'duration', pulse speaker HIGH and LOW
+		while (elapsed_time < duration) {
+			  digitalWrite(SPEAKER_PIN, HIGH);
+			  delayMicroseconds(tone / 2);
+
+			  // DOWN
+			  digitalWrite(SPEAKER_PIN, LOW);
+			  delayMicroseconds(tone / 2);
+
+			  // Keep track of how long we pulsed
+			  elapsed_time += (tone);
+		}
+	} else { // Rest beat; loop times delay
+		for (int j = 0; j < 100; j++) { // See NOTE on rest_count
+			delayMicroseconds(duration);  
+		}                                
+	}                                
+}*/
 
 void GetNextFile(bool forward)
 {	
@@ -97,14 +156,13 @@ void RunMenu(void)
 {
 	bool exit = false;
 	char option = 0;
-	//bool la//stkey[6];
-	//memset(lastkey, 0, sizeof(lastkey));
 	bool firsttime = true;
 	while (exit == false) { 
 		key.ReadPins();
 		
 		// only changes if some key is pressed		
 		if (firsttime || ( ( (key.Up() || key.Down()) || ( key.Left() || key.Right() ) ) || ( key.Esc() || key.Enter() ) ) ) {
+			playTone(TONE_1, 20);
 			firsttime = false;
 			if (key.Up()) {
 				option++;
@@ -115,8 +173,21 @@ void RunMenu(void)
 				if (option < 0) { option = menu_end - 1;}
 			}
 			if (key.Esc()) {
-				if (imgFile.isDirectory()) {
+				if ((option == menu_image) && imgFile.isDirectory()) {
 					//lcd.print("*");
+				} else if (option == menu_save_config) {
+					lcd.clear();
+					lcd.print("Saving...");					
+					EEPROM.write(0, ledBrightness);
+					EEPROM.write(1, extrapolation);
+					EEPROM.write(2, mirror);
+					EEPROM.write(3, startDelay);
+					EEPROM.write(4, soundVolume);
+					EEPROM.write(5, keepLCDLight);
+					
+					delay(2000);
+					
+					lcd.clear();
 				} else {
 					exit = true;				
 					break;
@@ -148,12 +219,12 @@ void RunMenu(void)
 
 					case menu_brightness:			
 						if (key.Right()) {
-							if (ledBrightness > 5) {
-								ledBrightness -= 5;
+							if (ledBrightness > 0) {
+								ledBrightness -= 10;
 							}
 						} else {
 							if (ledBrightness < 100) {
-								ledBrightness += 5;
+								ledBrightness += 10;
 							}
 						}
 					break;	
@@ -183,29 +254,40 @@ void RunMenu(void)
 					break;	
 						
 					case menu_mirror:			
+						mirror = !mirror;						
+					break;							
+						
+					case menu_use_sound:	
 						if (key.Right()) {
-							if (mirror > 0) {
-								mirror -= 1;
+							soundVolume -= 10;
+							if (soundVolume < 0) {
+								soundVolume = 00;
 							}
 						} else {
-							if (mirror < 1) {
-								mirror += 1;
+							soundVolume += 10;
+							if (soundVolume > 100) {
+								soundVolume = 100;
 							}
-						}
+						}		
+					break;							
+					
+					case menu_keep_lcd_led:			
+						keepLCDLight = !keepLCDLight;						
 					break;							
 				}
 			}
 			
+			//Serial.println(menu_titles[option]);
 			lcd.clear();
 			lcd.setCursor(0, 0); 
-			lcd.print(menu_titles[option]); //escreve no lcd "olá garagista!"
+			lcd.print(menu_titles[option]); 			
 			lcd.setCursor(0, 1); 
 			switch (option) {
 				case menu_image:
 					if (imgFile.isDirectory()) {
 						lcd.print("*");
 					}
-					lcd.print((char *)imageName); 
+					lcd.print((char *)imageName); 					
 				break;					
 
 				case menu_speed:
@@ -216,6 +298,7 @@ void RunMenu(void)
 				case menu_brightness:			
 					lcd.print(ledBrightness); 
 					lcd.print(" %"); 
+					analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
 				break;	
 				
 				case menu_extrapolation:
@@ -228,15 +311,26 @@ void RunMenu(void)
 				break;	
 				
 				case menu_mirror:			
-					lcd.print(YES_NO[mirror]); 
-					lcd.print(" %"); 
+					lcd.print(YES_NO[mirror]); 					
+				break;	
+				
+				case menu_use_sound:
+					lcd.print((int)soundVolume); 					
+					lcd.print(" %");
+				break;	
+				
+				case menu_keep_lcd_led:
+					lcd.print(YES_NO[keepLCDLight]); 					
 				break;	
 				
 				case menu_start_delay:			
-					lcd.print(startDelay); 
+					lcd.print((int)startDelay); 
 					lcd.print(" sec."); 
 				break;	
-
+				
+				case menu_save_config:
+					lcd.print("Press GO to save"); 
+				break;
 			}
 			
 			// wait until key is released
@@ -244,13 +338,16 @@ void RunMenu(void)
 				delay(50);
 				key.ReadPins();			
 			}		
-		}
+		}		
 		
+		delay(50);		
 		
-		delay(50);
 	}
 	
 	lcd.clear();
+	
+	
+	//Serial.println((char *)imageName);/////
 }
 
 bool SDReadInt16(unsigned int * ptr)
@@ -321,6 +418,7 @@ void DisplayImage(void)
 		int count = startDelay;
 		lcd.print("Waiting...");
 		while (count > 0) {
+			playTone(TONE_1, 50);
 			lcd.setCursor(0,1);
 			lcd.print(count);
 			lcd.print ("   ");
@@ -330,6 +428,20 @@ void DisplayImage(void)
 		lcd.clear();
 	}
 	
+	//Serial.println("Vai imprimir");
+	if (soundVolume > 0) {
+		for (int i=0; i < 4; i++) {
+			delay(100);		
+			playTone(TONE_2, 100);
+		}
+	}
+	
+	if (!keepLCDLight) {
+		analogWrite(LCD_LED_PIN, 0);
+	}
+	
+	bool userTerminated = false;
+	
 	do {
 		lcd.print(imgFile.name());
 		//Serial.println (imgFile.name());	
@@ -337,10 +449,12 @@ void DisplayImage(void)
 		char b = imgFile.read();
 		char m = imgFile.read();
 		if ((b != 'B') or (m != 'M')) {
+			lcd.setCursor(0,1);
 			lcd.print("Invalid file!");
+			memset(leds, 0, sizeof(leds));
+			DisplaySingleLedRow();	
+			analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
 			delay(2000);
-			Serial.println(b);
-			Serial.println(m);
 			return;
 		}
 		
@@ -352,12 +466,16 @@ void DisplayImage(void)
 		unsigned long int imgHeight;
 		SDReadInt32(&imgHeight);
 		
-		Serial.print("header size "); Serial.println(headerSize);
-		Serial.print("imgWidth "); Serial.println(imgWidth);
-		Serial.print("imgHeight "); Serial.println(imgHeight);
+		//Serial.print("header size "); Serial.println(headerSize);
+		//Serial.print("imgWidth "); Serial.println(imgWidth);
+		//Serial.print("imgHeight "); Serial.println(imgHeight);
 		
 		if (imgWidth != STRIP_LENGTH) {
+			lcd.setCursor(0,1);
 			lcd.print("Invalid width");
+			memset(leds, 0, sizeof(leds));
+			DisplaySingleLedRow();	
+			analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
 			delay(2000);
 			return;		
 		}
@@ -388,17 +506,28 @@ void DisplayImage(void)
 			lcd.print(perc);
 			lcd.print(" %   ");		
 			
+			//Serial.println(y);
 			unsigned long deltaTime = millis() - time1;		
-			if (expectedDelay > deltaTime) {
-				delay (expectedDelay - deltaTime);
+			while (expectedDelay > deltaTime) {
+				delay(10);
+				deltaTime = millis() - time1;		
+				key.ReadPins();					
+				if (key.Enter() ) {
+					userTerminated = true;
+					while (key.Enter() ) {
+						delay(10);
+						key.ReadPins();					
+					}
+					break;
+				}
 			}
-			key.ReadPins();					
-			if (key.Enter() ) {
+			if (userTerminated) {
 				break;
 			}
 		}
 		
-		if (extrapolation == 0) {
+		//Serial.println("acabando...");
+		if ( (extrapolation == 0) || userTerminated ){
 			break;
 		} else if (extrapolation == 2) {
 			if (sdFileIndex < sdFileCount - 1) {
@@ -421,38 +550,80 @@ void DisplayImage(void)
 	
 	memset(leds, 0, sizeof(leds));
 	DisplaySingleLedRow();	
+	analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+	
+	//Serial.println("imprimiu");
 }
 
 void setup()
-{
-	
+{	
 	pinMode(STRIP_SDI, OUTPUT);
 	pinMode(STRIP_CKI, OUTPUT);
 	
+	pinMode(SPEAKER_PIN, OUTPUT);
+	
+	ledBrightness = EEPROM.read(0);
+	extrapolation = EEPROM.read(1);
+	mirror = EEPROM.read(2);
+	startDelay = EEPROM.read(3);
+	soundVolume = EEPROM.read(4);	
+	keepLCDLight = EEPROM.read(5);	
+	
+	//playTone(TONE_1, 1000);
+	
 	Serial.begin  (9600);
+	
 	Serial.println("inicio...");	
 	
+	Serial.print("Stack a:[");
+	Serial.print (StackCount());
+	Serial.println("] ");
+	
 	lcd.begin(16, 2); //inicia o lcd com dimensões 16x2(colunas x linhas)
+	
+	//Serial.print("Stack b:[");
+	//Serial.print (StackCount());
+	//Serial.println("] ");
 	/*lcd.setcursor(0, 0); //posiciona o cursor na primeira coluna(0) e na primeira linha(0) do lcd
 	lcd.print("ola garagista!"); //escreve no lcd "olá garagista!"
 	lcd.setcursor(0, 1); //posiciona o cursor na primeira coluna(0) e na segunda linha(1) do lcd
 	lcd.print("labdegaragem"); //escreve no lcd "labdegaragem"
 	*/
 	
-	pinMode(53, OUTPUT);
-	digitalWrite(53, HIGH);
+	//Serial.println("sd1");	
+	pinMode(SD_CHIP_SELECT, OUTPUT);
+	digitalWrite(SD_CHIP_SELECT, HIGH);
+	
+	//Serial.println("sd2");
+	
+	//Serial.print("Stack c:[");
+	//Serial.print (StackCount());
+	//Serial.println("] ");;	
   
 	// see if the card is present and can be initialized:
 	if (!SD.begin()) {
+		//Serial.println("sd3");	
 		lcd.print("SD Card Error!");
 		lcd.setCursor(0, 1); 
 		lcd.print("Fix and restart");
 		error = true;
 		return;
-	}		   
+	}		
 
+/*	Serial.print("Stack d:[");
+/*	Serial.print (StackCount());
+	Serial.println("] ");	
+	Serial.println(freeMemory());
+	
+	Serial.println("sd4");	
+*/
 	root = SD.open("/");	
-	Serial.println("card initialized.");
+//	Serial.println("card initialized.");
+	
+//	Serial.print("Stack e:[");
+//	Serial.print (StackCount());
+//	Serial.println("] ");
+	//Serial.println(freeMemory());
 	
 	// Count the number of files
 	sdFileCount = 0;
@@ -465,10 +636,25 @@ void setup()
 		entry.close();
 	}
 	
+	//Serial.print("Stack f:[");
+	//Serial.print (StackCount());
+	//Serial.println("] ");
+	
 	root.rewindDirectory();
 	imgFile =  root.openNextFile();	
 	memset(imageName, 0, sizeof(imageName));
 	memcpy(imageName, imgFile.name(), sizeof(imageName)-1);
+	
+	Serial.print("Stack g:[");
+	Serial.print (StackCount());
+	Serial.println("] ");
+	
+	GetNextFile(true);
+	//GetNextFile(true);
+	//GetNextFile(true);
+	
+	pinMode(LCD_LED_PIN, OUTPUT);
+	analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
 	
 	lcd.clear();
 	lcd.print("Purpurina 2");
@@ -477,16 +663,35 @@ void setup()
 	lcd.print (sdFileCount);
 	delay(500);
 	
-	Serial.println("fim...");		
+	Serial.println("fim do setup!");		
 }
 
 void loop()
 {
+	/*(Serial.print("Stack 0:[");
+	Serial.print (StackCount());
+	Serial.println("] ");
+	delay(1000);
+	return;*/
 	if (error) {
 		delay(1000);
 	} else {
+		//Serial.print("Stack 1:[");
+		//Serial.print (StackCount());
+		//Serial.println("] ");
+		
 		RunMenu();
 		DisplayImage();
+		
+		/*Serial.print("Stack 2:[");
+		Serial.print (StackCount());
+		Serial.println("] ");
+		
+		
+		Serial.print("Stack 3:[");
+		Serial.print (StackCount());
+		Serial.println("] ");
+		delay(5000);*/
 	}
 	/*lcd.setcursor(1, 1); //posiciona o cursor na décima quarta coluna(13) e na segunda linha(1) do lcd
 	lcd.print(temp); //escreve o valor atual da variável de contagem no lcd
