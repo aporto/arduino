@@ -22,9 +22,9 @@
         <external name="SD/utility/SdFile.cpp" open="no"/>
         <external name="SD/utility/SdInfo.h" open="no"/>
         <external name="SD/utility/SdVolume.cpp" open="no"/>
-        <external name="StackCheck/StackCheck.cpp" open="yes"/>
+        <external name="StackCheck/StackCheck.cpp" open="no"/>
         <external name="StackCheck/StackCheck.h" open="no"/>
-        <external name="MemoryFree/MemoryFree.cpp" open="yes"/>
+        <external name="MemoryFree/MemoryFree.cpp" open="no"/>
         <external name="MemoryFree/MemoryFree.h" open="no"/>
         <external name="EEPROM/EEPROM.cpp" open="no"/>
         <external name="EEPROM/EEPROM.h" open="no"/>

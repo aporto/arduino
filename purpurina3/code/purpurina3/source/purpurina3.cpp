@@ -26,23 +26,24 @@
 
 #define SPEAKER_PIN	8
 
-#define mode_menu
+//#define mode_menu
+	
+#define menu_image				0
+#define menu_speed				1
+#define menu_lcd_brightness		2
+#define menu_led_brightness		3
+#define menu_extrapolation		4
+#define menu_mirror				5
+#define menu_start_delay		6
+#define menu_use_sound			7
+#define menu_keep_lcd_led		8
+#define menu_save_config		9
+#define menu_end				10
 
-#define menu_image			0
-#define menu_speed			1
-#define menu_brightness		2
-#define menu_extrapolation	3
-#define menu_mirror			4
-#define menu_start_delay	5
-#define menu_use_sound		6
-#define menu_keep_lcd_led	7
-#define menu_save_config	8
-#define menu_end			9
+#define STRIP_LENGTH 			32
 
-#define STRIP_LENGTH 		32
-
-#define  TONE_1     3830    // 261 Hz
-#define  TONE_2     1912        // 294 Hz 
+#define  TONE_1     			3830    // 261 Hz
+#define  TONE_2   				 1912        // 294 Hz 
 
 
 //---------------------------------------------------------------------------
@@ -52,23 +53,27 @@ MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
 
 //byte mode = mode_menu;
 
-const char menu_titles[menu_end][15] = {"Image", "Speed", "Led brightness", 
+const char menu_titles[menu_end][15] = {"Image", "Speed", "LCD brightness", "LED brightness",	
 										"Extrapolation", "Mirror", "Start delay", 
 										"Sound volume", "Keep LCD Light", "Save config."};
 const char YES_NO[2][4] = {"No", "Yes"};			  
 
 uint8_t imageName[13] = "image.bmp";
-unsigned char speed = 100;
-unsigned char ledBrightness = 80;
+int speed = 100;
+char lcdBrightness = 80;
+char ledBrightness = 100;
 char extrapolation = 0;
 char mirror = 0;
 char startDelay = 0;
 char soundVolume = 0;
 char keepLCDLight = 0;
 
+unsigned int speedDelays[10] = {0, 100, 200, 400, 700, 1000, 2000, 4000, 7000, 10000};
+
 bool error = false;
 
 
+//File previousDir;
 File root;
 File imgFile;
 long int sdFileIndex = 0;
@@ -77,6 +82,38 @@ long int sdFileCount = 0;
 uint8_t leds[STRIP_LENGTH][3];
 
 //int temp; //inicia uma variável inteira(temp), para escrever no lcd a contagem do tempo
+
+void writeToEEprom(int eepromAddress, char * memoryAddress, unsigned char numOfBytes)
+{
+	char * ptr = memoryAddress;
+	for (unsigned char i=0; i < numOfBytes; i++) {
+		EEPROM.write(eepromAddress, *ptr);
+		eepromAddress++;
+		ptr++;
+	}	
+}
+
+void readFromEEprom(int eepromAddress, char * memoryAddress, unsigned char numOfBytes)
+{
+	for (unsigned char i=0; i < numOfBytes; i++) {
+		*memoryAddress = EEPROM.read(eepromAddress);
+		eepromAddress++;
+		memoryAddress++;
+	}	
+}
+
+void CountDirectoryFiles(void)
+{
+	sdFileCount = 0;
+	while (true) {
+		File entry =  root.openNextFile();
+		if (!entry) {		
+			break;
+		}
+		sdFileCount++;
+		entry.close();
+	}
+}
 
 void playTone(int tone, int duration) 
 {
@@ -172,20 +209,54 @@ void RunMenu(void)
 				option--;
 				if (option < 0) { option = menu_end - 1;}
 			}
+			if (key.Enter()) {
+				if ((option == menu_image) && (strcmp(root.name(),"/") != 0)) {
+					lcd.clear();
+					lcd.print("Back to root...");					
+					root = SD.open("/");
+					//previousDir = NULL;
+					CountDirectoryFiles();
+					root.rewindDirectory();
+					imgFile =  root.openNextFile();	
+					memset(imageName, 0, sizeof(imageName));
+					memcpy(imageName, imgFile.name(), sizeof(imageName)-1);
+					delay(1000);
+				}
+			}
 			if (key.Esc()) {
 				if ((option == menu_image) && imgFile.isDirectory()) {
-					//lcd.print("*");
+					if (strcmp(root.name(),"/") == 0) {
+						lcd.clear();
+						lcd.print("Entering dir...");					
+						//previousDir = root;
+						root = imgFile; //SD.open((char *)imageName);																
+						CountDirectoryFiles();
+						root.rewindDirectory();
+						imgFile =  root.openNextFile();	
+						memset(imageName, 0, sizeof(imageName));
+						memcpy(imageName, imgFile.name(), sizeof(imageName)-1);
+						delay(1000);
+					} else {
+						lcd.clear();
+						lcd.print("Only one sub-dir");
+						lcd.setCursor(0,1);
+						lcd.print("is allowed!");
+						delay(2000);
+					}
 				} else if (option == menu_save_config) {
 					lcd.clear();
 					lcd.print("Saving...");					
-					EEPROM.write(0, ledBrightness);
+					EEPROM.write(0, lcdBrightness);
 					EEPROM.write(1, extrapolation);
 					EEPROM.write(2, mirror);
 					EEPROM.write(3, startDelay);
 					EEPROM.write(4, soundVolume);
 					EEPROM.write(5, keepLCDLight);
+					//EEPROM.write(6, speed);		
+					writeToEEprom(6, (char *) &speed, 2);
+					EEPROM.write(8, ledBrightness);						
 					
-					delay(2000);
+					delay(1000);
 					
 					lcd.clear();
 				} else {
@@ -205,26 +276,44 @@ void RunMenu(void)
 						
 					break;					
 
-					case menu_speed:
+					case menu_speed:						
 						if (key.Right()) {
-							if (speed > 10) {
-								speed -= 10;
+							speed -= 1;
+							if (speed < 0) {
+								speed = 0;
 							}
 						} else {
-							if (speed < 500) {
-								speed += 10;
+							speed += 1;
+							if (speed > 9) {
+								speed = 9;
 							}
 						}
 					break;
 
-					case menu_brightness:			
+					case menu_lcd_brightness:									
 						if (key.Right()) {
-							if (ledBrightness > 0) {
-								ledBrightness -= 10;
+							lcdBrightness -= 10;
+							if (lcdBrightness < 0) {
+								lcdBrightness = 0;
 							}
 						} else {
-							if (ledBrightness < 100) {
-								ledBrightness += 10;
+							lcdBrightness += 10;
+							if (lcdBrightness > 100) {
+								lcdBrightness = 100;
+							}
+						}
+					break;	
+						
+					case menu_led_brightness:			
+						if (key.Right()) {
+							ledBrightness -= 10;
+							if (ledBrightness < 10) {
+								ledBrightness = 10;
+							}
+						} else {
+							ledBrightness += 10;
+							if (ledBrightness > 100) {
+								ledBrightness = 100;
 							}
 						}
 					break;	
@@ -281,24 +370,35 @@ void RunMenu(void)
 			lcd.clear();
 			lcd.setCursor(0, 0); 
 			lcd.print(menu_titles[option]); 			
+			lcd.print(":");			
+			
 			lcd.setCursor(0, 1); 
 			switch (option) {
 				case menu_image:
+					lcd.setCursor(11,0);
 					if (imgFile.isDirectory()) {
-						lcd.print("*");
+						lcd.print("(DIR)");
+					} else {
+						lcd.print("     ");
 					}
-					lcd.print((char *)imageName); 					
+					lcd.setCursor(0, 1); 
+					lcd.print((char *)imageName); 								
 				break;					
 
 				case menu_speed:
-					lcd.print(speed); 
-					lcd.print(" %"); 
+					lcd.print((int)speed+1); 
+					//lcd.print(" %"); 
 				break;
 
-				case menu_brightness:			
-					lcd.print(ledBrightness); 
+				case menu_lcd_brightness:			
+					lcd.print((int)lcdBrightness); 
 					lcd.print(" %"); 
-					analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+					analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
+				break;	
+				
+				case menu_led_brightness:			
+					lcd.print((int)ledBrightness); 
+					lcd.print(" %"); 					
 				break;	
 				
 				case menu_extrapolation:
@@ -413,19 +513,18 @@ void DisplaySingleLedRow(void)
 
 void DisplayImage(void)
 {
-	lcd.clear();
 	if (startDelay > 0) {
 		int count = startDelay;
 		lcd.print("Waiting...");
 		while (count > 0) {
 			playTone(TONE_1, 50);
+			lcd.clear();
 			lcd.setCursor(0,1);
 			lcd.print(count);
 			lcd.print ("   ");
 			delay(1000);
 			count--;
-		}
-		lcd.clear();
+		}		
 	}
 	
 	//Serial.println("Vai imprimir");
@@ -442,9 +541,9 @@ void DisplayImage(void)
 	
 	bool userTerminated = false;
 	
-	do {
+	do {			
+		lcd.clear();	
 		lcd.print(imgFile.name());
-		//Serial.println (imgFile.name());	
 		imgFile.seek(0);		
 		char b = imgFile.read();
 		char m = imgFile.read();
@@ -453,11 +552,10 @@ void DisplayImage(void)
 			lcd.print("Invalid file!");
 			memset(leds, 0, sizeof(leds));
 			DisplaySingleLedRow();	
-			analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 			delay(2000);
 			return;
 		}
-		
 		imgFile.seek(14);
 		unsigned long int headerSize;
 		SDReadInt32(&headerSize);
@@ -475,7 +573,7 @@ void DisplayImage(void)
 			lcd.print("Invalid width");
 			memset(leds, 0, sizeof(leds));
 			DisplaySingleLedRow();	
-			analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 			delay(2000);
 			return;		
 		}
@@ -483,9 +581,13 @@ void DisplayImage(void)
 		imgFile.seek(14 + headerSize);	
 		int perc = 0;
 		
-		lcd.print("Printing...");	
-		unsigned long expectedDelay = 250 + (speed / 10 - 1) * (750 / 9);
-		
+		//lcd.clear();
+		//lcd.print("Printing...");	
+		unsigned long expectedDelay = speedDelays[9 - speed]; //250 + (speed / 10 - 1) * (750 / 9);
+		if (expectedDelay == 0) {
+			lcd.setCursor(0, 1);
+			lcd.print("Full speed!");		
+		}		
 		for (unsigned long int y = 0; y < imgHeight; y++) {
 			unsigned long time1 = millis();
 			//String line = String(y) + ":";
@@ -495,25 +597,40 @@ void DisplayImage(void)
 					idx = STRIP_LENGTH - 1 - i;
 				}
 				leds[idx][2] = imgFile.read();
-				leds[idx][1]= imgFile.read();
-				leds[idx][0]= imgFile.read();
+				leds[idx][1] = imgFile.read();
+				leds[idx][0] = imgFile.read();
+				
+				if (ledBrightness < 100) {
+					leds[idx][0] = (unsigned char) (float(leds[idx][0]) * float(ledBrightness) / 100.0f);
+					leds[idx][1] = (unsigned char) (float(leds[idx][1]) * float(ledBrightness) / 100.0f);
+					leds[idx][2] = (unsigned char) (float(leds[idx][2]) * float(ledBrightness) / 100.0f);					
+				}
 			}
 
 			DisplaySingleLedRow();	
 			
-			perc = y * 100 / imgHeight;
-			lcd.setCursor(0, 1);
-			lcd.print(perc);
-			lcd.print(" %   ");		
+			if (expectedDelay > 0) {
+				perc = y * 100 / imgHeight;
+				lcd.setCursor(0, 1);
+				lcd.print(perc);
+				lcd.print(" %   ");		
+			}
 			
 			//Serial.println(y);
 			unsigned long deltaTime = millis() - time1;		
+			key.ReadPins();					
+			if (key.Enter() ) { // hack para forcar a ler o teclado quando a velocidade estiver muito alta
+				//Serial.print(":");
+				//Serial.println(deltaTime);
+				expectedDelay = deltaTime + 1;
+			}
 			while (expectedDelay > deltaTime) {
-				delay(10);
-				deltaTime = millis() - time1;		
 				key.ReadPins();					
+				delay(10);
+				deltaTime = millis() - time1;						
 				if (key.Enter() ) {
 					userTerminated = true;
+					Serial.println("1");
 					while (key.Enter() ) {
 						delay(10);
 						key.ReadPins();					
@@ -522,12 +639,15 @@ void DisplayImage(void)
 				}
 			}
 			if (userTerminated) {
+				//Serial.println("2");
 				break;
 			}
 		}
 		
+		//Serial.println("3");
 		//Serial.println("acabando...");
 		if ( (extrapolation == 0) || userTerminated ){
+			//Serial.println("4");
 			break;
 		} else if (extrapolation == 2) {
 			if (sdFileIndex < sdFileCount - 1) {
@@ -546,11 +666,13 @@ void DisplayImage(void)
 		}
 		
 		
+		//Serial.println("5");
 	} while (true);
+	//Serial.println("6");
 	
 	memset(leds, 0, sizeof(leds));
 	DisplaySingleLedRow();	
-	analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+	analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 	
 	//Serial.println("imprimiu");
 }
@@ -559,17 +681,20 @@ void setup()
 {	
 	pinMode(STRIP_SDI, OUTPUT);
 	pinMode(STRIP_CKI, OUTPUT);
-	
+	pinMode(LCD_LED_PIN, OUTPUT);
 	pinMode(SPEAKER_PIN, OUTPUT);
 	
-	ledBrightness = EEPROM.read(0);
+	lcdBrightness = EEPROM.read(0);
 	extrapolation = EEPROM.read(1);
 	mirror = EEPROM.read(2);
 	startDelay = EEPROM.read(3);
 	soundVolume = EEPROM.read(4);	
 	keepLCDLight = EEPROM.read(5);	
-	
-	//playTone(TONE_1, 1000);
+	//speed = EEPROM.read(6);
+	readFromEEprom(6, (char *)&speed, 2);
+	ledBrightness = EEPROM.read(8);
+
+	analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 	
 	Serial.begin  (9600);
 	
@@ -626,15 +751,8 @@ void setup()
 	//Serial.println(freeMemory());
 	
 	// Count the number of files
-	sdFileCount = 0;
-	while (true) {
-		File entry =  root.openNextFile();
-		if (!entry) {		
-			break;
-		}
-		sdFileCount++;
-		entry.close();
-	}
+	CountDirectoryFiles();
+	
 	
 	//Serial.print("Stack f:[");
 	//Serial.print (StackCount());
@@ -651,10 +769,7 @@ void setup()
 	
 	GetNextFile(true);
 	//GetNextFile(true);
-	//GetNextFile(true);
-	
-	pinMode(LCD_LED_PIN, OUTPUT);
-	analogWrite(LCD_LED_PIN, 255 * ledBrightness / 100);
+	//GetNextFile(true);	
 	
 	lcd.clear();
 	lcd.print("Purpurina 2");
