@@ -20,6 +20,10 @@
 #define STRIP_CKI		47 //41
 #define STRIP_SDI		46 //40
 
+
+#define EXT_BUTTON_GND	26
+#define EXT_BUTTON_INP	27
+
 #define LCD_LED_PIN		7
 
 #define SD_CHIP_SELECT	53
@@ -46,7 +50,7 @@
 #define  TONE_2   				 1912        // 294 Hz 
 
 
-//---------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
 LiquidCrystal lcd(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7); //configura os pinos do arduino para se comunicar com o lcd
 MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
@@ -79,9 +83,30 @@ File imgFile;
 long int sdFileIndex = 0;
 long int sdFileCount = 0;
 
+bool usingExternalButton = false;
+
 uint8_t leds[STRIP_LENGTH][3];
 
 //int temp; //inicia uma variável inteira(temp), para escrever no lcd a contagem do tempo
+
+bool GetExternalButtonStatus(void)
+{
+	bool status1 = !(digitalRead(EXT_BUTTON_INP)); // result is inverted because pullup res on input	
+	delay(10);
+	bool status2 = !(digitalRead(EXT_BUTTON_INP)); // result is inverted because pullup res on input
+	
+	/*Serial.print("s:");
+	Serial.print(status1);
+	Serial.print(",");
+	Serial.println(status2);*/
+	
+	if (status1 == status2) {
+		return status1;
+	} else {
+		return false;
+	}
+	
+}
 
 void writeToEEprom(int eepromAddress, char * memoryAddress, unsigned char numOfBytes)
 {
@@ -130,37 +155,11 @@ void playTone(int tone, int duration)
 	}
 }
 
-/*void playTone2(int tone, int duration) {
-	if (!useSound) {
-		return;
-	}
-	long elapsed_time = 0;
-	if (tone > 0) { // if this isn't a Rest beat, while the tone has
-		//  played less long than 'duration', pulse speaker HIGH and LOW
-		while (elapsed_time < duration) {
-			  digitalWrite(SPEAKER_PIN, HIGH);
-			  delayMicroseconds(tone / 2);
-
-			  // DOWN
-			  digitalWrite(SPEAKER_PIN, LOW);
-			  delayMicroseconds(tone / 2);
-
-			  // Keep track of how long we pulsed
-			  elapsed_time += (tone);
-		}
-	} else { // Rest beat; loop times delay
-		for (int j = 0; j < 100; j++) { // See NOTE on rest_count
-			delayMicroseconds(duration);  
-		}                                
-	}                                
-}*/
-
 void GetNextFile(bool forward)
 {	
 	if (sdFileCount < 2) {
 		return;
-	}
-	
+	}	
 	
 	char step = -1;
 	if (forward) {
@@ -194,10 +193,17 @@ void RunMenu(void)
 	bool exit = false;
 	char option = 0;
 	bool firsttime = true;
+	usingExternalButton = false;
 	while (exit == false) { 
 		key.ReadPins();
 		
 		// only changes if some key is pressed		
+		
+		if (GetExternalButtonStatus()) {
+			exit = true;	
+			usingExternalButton	= true;
+			break;
+		}
 		if (firsttime || ( ( (key.Up() || key.Down()) || ( key.Left() || key.Right() ) ) || ( key.Esc() || key.Enter() ) ) ) {
 			playTone(TONE_1, 20);
 			firsttime = false;
@@ -261,6 +267,7 @@ void RunMenu(void)
 					lcd.clear();
 				} else {
 					exit = true;				
+					usingExternalButton	= false;
 					break;
 				}
 			}
@@ -624,17 +631,33 @@ void DisplayImage(void)
 				//Serial.println(deltaTime);
 				expectedDelay = deltaTime + 1;
 			}
+			
+			if (usingExternalButton) {
+				if (GetExternalButtonStatus() == false) {
+					expectedDelay = deltaTime + 1;
+				}
+			}
+			
 			while (expectedDelay > deltaTime) {
 				key.ReadPins();					
-				delay(10);
+				
 				deltaTime = millis() - time1;						
+				if (usingExternalButton) {
+					if (GetExternalButtonStatus() == false) {
+						userTerminated = true;
+						break;
+					}
+				} else {
+					delay(10);
+				}
 				if (key.Enter() ) {
 					userTerminated = true;
-					Serial.println("1");
+					//Serial.println("1");
 					while (key.Enter() ) {
 						delay(10);
 						key.ReadPins();					
-					}
+					}				
+					
 					break;
 				}
 			}
@@ -674,6 +697,13 @@ void DisplayImage(void)
 	DisplaySingleLedRow();	
 	analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 	
+	if (usingExternalButton) {
+		playTone(TONE_1, 20);
+		while (GetExternalButtonStatus()) {
+			delay(50);
+		}		
+	}
+	
 	//Serial.println("imprimiu");
 }
 
@@ -683,6 +713,13 @@ void setup()
 	pinMode(STRIP_CKI, OUTPUT);
 	pinMode(LCD_LED_PIN, OUTPUT);
 	pinMode(SPEAKER_PIN, OUTPUT);
+	
+	pinMode(EXT_BUTTON_GND, OUTPUT);
+	digitalWrite(EXT_BUTTON_GND, 0);
+	pinMode(EXT_BUTTON_INP, INPUT_PULLUP);
+	
+	#define EXT_BUTTON_GND	26
+#define EXT_BUTTON_INP	27
 	
 	lcdBrightness = EEPROM.read(0);
 	extrapolation = EEPROM.read(1);
