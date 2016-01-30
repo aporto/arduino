@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM14" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility;$(LIBRARIES)/StackCheck;$(LIBRARIES)/EEPROM" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="1" serial_port="COM8" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility;$(LIBRARIES)/StackCheck;$(LIBRARIES)/EEPROM;$(LIBRARIES)/light_WS2812" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="purpurina3.cpp" open="yes"/>
-        <file name="mariamole_auto_generated.h" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
         <external name="LiquidCrystal/LiquidCrystal.cpp" open="no"/>
         <external name="LiquidCrystal/LiquidCrystal.h" open="no"/>
-        <external name="MiniKeyboard/MiniKeyboard.cpp" open="yes"/>
+        <external name="MiniKeyboard/MiniKeyboard.cpp" open="no"/>
         <external name="MiniKeyboard/MiniKeyboard.h" open="no"/>
         <external name="SD/File.cpp" open="no"/>
         <external name="SD/SD.cpp" open="no"/>
@@ -28,5 +28,8 @@
         <external name="MemoryFree/MemoryFree.h" open="no"/>
         <external name="EEPROM/EEPROM.cpp" open="no"/>
         <external name="EEPROM/EEPROM.h" open="no"/>
+        <external name="light_WS2812/light_ws2812.cpp" open="yes"/>
+        <external name="light_WS2812/WS2812.cpp" open="yes"/>
+        <external name="light_WS2812/WS2812.h" open="yes"/>
     </externals>
 </mm_project>

@@ -44,5 +44,6 @@
 #include <StackCheck.h>
 #include <MemoryFree.h>
 #include <EEPROM.h>
+#include <WS2812.h>
 
 #endif

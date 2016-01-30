@@ -17,8 +17,8 @@
 #define key_pin_4		40	//24
 #define key_pin_6		38	//22
 
-#define STRIP_CKI		47 //41
-#define STRIP_SDI		46 //40
+//#define STRIP_CKI		47 //41
+//#define STRIP_SDI		46 //40
 
 
 #define EXT_BUTTON_GND	26
@@ -44,10 +44,11 @@
 #define menu_save_config		9
 #define menu_end				10
 
-#define STRIP_LENGTH 			32
+#define STRIP_LENGTH 			144
+#define LED_DATA				46
 
 #define  TONE_1     			3830    // 261 Hz
-#define  TONE_2   				 1912        // 294 Hz 
+#define  TONE_2   				1912        // 294 Hz 
 
 
 //--------------------------------------------------------------------------
@@ -56,6 +57,8 @@ LiquidCrystal lcd(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7); //configura o
 MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
 
 //byte mode = mode_menu;
+
+WS2812 LED(STRIP_LENGTH); 
 
 const char menu_titles[menu_end][15] = {"Image", "Speed", "LCD brightness", "LED brightness",	
 										"Extrapolation", "Mirror", "Start delay", 
@@ -85,7 +88,7 @@ long int sdFileCount = 0;
 
 bool usingExternalButton = false;
 
-uint8_t leds[STRIP_LENGTH][3];
+//uint8_t leds[STRIP_LENGTH][3];
 
 //int temp; //inicia uma variável inteira(temp), para escrever no lcd a contagem do tempo
 
@@ -485,7 +488,7 @@ bool SDReadInt32(unsigned long int * ptr)
 	return true;
 }
 
-void DisplaySingleLedRow(void)
+/*void DisplaySingleLedRow(void)
 {	
 	//Each LED requires 24 bits of data
   //MSB: R7, R6, R5..., G7, G6..., B7, B6... B0 
@@ -516,7 +519,52 @@ void DisplaySingleLedRow(void)
   //Pull clock low to put strip into reset/post mode
   digitalWrite(STRIP_CKI, LOW);
   delayMicroseconds(500); //Wait for 500us to go into reset
+} */
+
+void ClearLeds(void)
+{
+	cRGB value;
+	value.r = 0;
+	value.g = 0;
+	value.b = 0;
+	for (int i=0; i < STRIP_LENGTH; i++) {		
+		LED.set_crgb_at(i, value);
+	}
+	LED.sync(); // Sends the data to the LEDs
 }
+
+/*void DisplaySingleLedRow(void)
+{	
+	//Each LED requires 24 bits of data
+  //MSB: R7, R6, R5..., G7, G6..., B7, B6... B0 
+  //Once the 24 bits have been delivered, the IC immediately relays these bits to its neighbor
+  //Pulling the clock low for 500us or more causes the IC to post the data.
+
+  for(int LED_number = 0 ; LED_number < STRIP_LENGTH ; LED_number++) {
+    long this_led_color;// = strip_colors[LED_number]; //24 bits of color data
+	memcpy(&this_led_color, &(leds[LED_number]), 4);	  
+
+    for(byte color_bit = 23 ; color_bit != 255 ; color_bit--) {
+      //Feed color bit 23 first (red data MSB)
+      
+      digitalWrite(STRIP_CKI, LOW); //Only change data when clock is low
+      
+      long mask = 1L << color_bit;
+      //The 1'L' forces the 1 to start as a 32 bit number, otherwise it defaults to 16-bit.
+      
+      if(this_led_color & mask) 
+        digitalWrite(STRIP_SDI, HIGH);
+      else
+        digitalWrite(STRIP_SDI, LOW);
+  
+      digitalWrite(STRIP_CKI, HIGH); //Data is latched when clock goes high
+    }
+  }
+
+  //Pull clock low to put strip into reset/post mode
+  digitalWrite(STRIP_CKI, LOW);
+  delayMicroseconds(500); //Wait for 500us to go into reset
+}*/
 
 void DisplayImage(void)
 {
@@ -557,8 +605,9 @@ void DisplayImage(void)
 		if ((b != 'B') or (m != 'M')) {
 			lcd.setCursor(0,1);
 			lcd.print("Invalid file!");
-			memset(leds, 0, sizeof(leds));
-			DisplaySingleLedRow();	
+			ClearLeds();
+			//memset(leds, 0, sizeof(leds));
+			//DisplaySingleLedRow();	
 			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 			delay(2000);
 			return;
@@ -575,15 +624,16 @@ void DisplayImage(void)
 		//Serial.print("imgWidth "); Serial.println(imgWidth);
 		//Serial.print("imgHeight "); Serial.println(imgHeight);
 		
-		if (imgWidth != STRIP_LENGTH) {
+		/*if (imgWidth != STRIP_LENGTH) {
 			lcd.setCursor(0,1);
 			lcd.print("Invalid width");
-			memset(leds, 0, sizeof(leds));
-			DisplaySingleLedRow();	
+			//memset(leds, 0, sizeof(leds));
+			//DisplaySingleLedRow();	
+			ClearLeds();
 			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 			delay(2000);
 			return;		
-		}
+		}*/
 		
 		imgFile.seek(14 + headerSize);	
 		int perc = 0;
@@ -595,26 +645,44 @@ void DisplayImage(void)
 			lcd.setCursor(0, 1);
 			lcd.print("Full speed!");		
 		}		
+		cRGB value;
+		
 		for (unsigned long int y = 0; y < imgHeight; y++) {
 			unsigned long time1 = millis();
 			//String line = String(y) + ":";
-			for (int i=0; i < STRIP_LENGTH; i++) {
-				char idx = i;
-				if (mirror) {
-					idx = STRIP_LENGTH - 1 - i;
-				}
-				leds[idx][2] = imgFile.read();
-				leds[idx][1] = imgFile.read();
-				leds[idx][0] = imgFile.read();
+			
+			for (int i=0; i < imgWidth; i++) { //STRIP_LENGTH				
 				
-				if (ledBrightness < 100) {
-					leds[idx][0] = (unsigned char) (float(leds[idx][0]) * float(ledBrightness) / 100.0f);
-					leds[idx][1] = (unsigned char) (float(leds[idx][1]) * float(ledBrightness) / 100.0f);
-					leds[idx][2] = (unsigned char) (float(leds[idx][2]) * float(ledBrightness) / 100.0f);					
+				value.g = imgFile.read();
+				value.b = imgFile.read();
+				value.r = imgFile.read();
+				
+				if (i < STRIP_LENGTH) {				
+					uint8_t idx = i;
+						if (mirror) {
+						idx = STRIP_LENGTH - 1 - i;
+					}
+					//if (ledBrightness < 100) {
+					//my leds are supper bright. Using only 10% of maximum brigthness (divida by 1000 instead of 100)
+					value.r = (unsigned char) (float(value.r) * float(ledBrightness) / 1000.0f);
+					value.g = (unsigned char) (float(value.g) * float(ledBrightness) / 1000.0f);
+					value.b = (unsigned char) (float(value.b) * float(ledBrightness) / 1000.0f);					
+					//}
+					LED.set_crgb_at(idx, value);
+				}
+			}
+			if (imgWidth < STRIP_LENGTH) {
+				int count = STRIP_LENGTH - imgWidth;
+				value.g = 0;
+				value.b = 0;
+				value.r = 0;
+				for (int i=0; i < count; i++) {
+					LED.set_crgb_at(i + imgWidth, value);					
 				}
 			}
 
-			DisplaySingleLedRow();	
+			//DisplaySingleLedRow();	
+			LED.sync();
 			
 			if (expectedDelay > 0) {
 				perc = y * 100 / imgHeight;
@@ -693,8 +761,9 @@ void DisplayImage(void)
 	} while (true);
 	//Serial.println("6");
 	
-	memset(leds, 0, sizeof(leds));
-	DisplaySingleLedRow();	
+	//memset(leds, 0, sizeof(leds));
+	//DisplaySingleLedRow();	
+	ClearLeds();
 	analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 	
 	if (usingExternalButton) {
@@ -709,8 +778,8 @@ void DisplayImage(void)
 
 void setup()
 {	
-	pinMode(STRIP_SDI, OUTPUT);
-	pinMode(STRIP_CKI, OUTPUT);
+	//pinMode(STRIP_SDI, OUTPUT);
+	//pinMode(STRIP_CKI, OUTPUT);
 	pinMode(LCD_LED_PIN, OUTPUT);
 	pinMode(SPEAKER_PIN, OUTPUT);
 	
@@ -718,8 +787,11 @@ void setup()
 	digitalWrite(EXT_BUTTON_GND, 0);
 	pinMode(EXT_BUTTON_INP, INPUT_PULLUP);
 	
-	#define EXT_BUTTON_GND	26
-#define EXT_BUTTON_INP	27
+	LED.setOutput(LED_DATA); // Digital Pin 7
+	LED.setColorOrderBRG();
+	
+//	#define EXT_BUTTON_GND	26
+//#define EXT_BUTTON_INP	27
 	
 	lcdBrightness = EEPROM.read(0);
 	extrapolation = EEPROM.read(1);
@@ -814,6 +886,8 @@ void setup()
 	lcd.print("Files: ");
 	lcd.print (sdFileCount);
 	delay(500);
+	
+	ClearLeds();
 	
 	Serial.println("fim do setup!");		
 }
