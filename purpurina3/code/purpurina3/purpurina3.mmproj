@@ -30,6 +30,6 @@
         <external name="EEPROM/EEPROM.h" open="no"/>
         <external name="light_WS2812/light_ws2812.cpp" open="yes"/>
         <external name="light_WS2812/WS2812.cpp" open="yes"/>
-        <external name="light_WS2812/WS2812.h" open="yes"/>
+        <external name="light_WS2812/WS2812.h" open="no"/>
     </externals>
 </mm_project>

@@ -50,7 +50,6 @@
 #define  TONE_1     			3830    // 261 Hz
 #define  TONE_2   				1912        // 294 Hz 
 
-
 //--------------------------------------------------------------------------
 
 LiquidCrystal lcd(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7); //configura os pinos do arduino para se comunicar com o lcd
@@ -60,7 +59,7 @@ MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
 
 WS2812 LED(STRIP_LENGTH); 
 
-const char menu_titles[menu_end][15] = {"Image", "Speed", "LCD brightness", "LED brightness",	
+const char menu_titles[menu_end][15] = {"Image", "Duration", "LCD brightness", "LED brightness",	
 										"Extrapolation", "Mirror", "Start delay", 
 										"Sound volume", "Keep LCD Light", "Save config."};
 const char YES_NO[2][4] = {"No", "Yes"};			  
@@ -74,6 +73,7 @@ char mirror = 0;
 char startDelay = 0;
 char soundVolume = 0;
 char keepLCDLight = 0;
+//unsigned long timeSyncingLed = 0;
 
 unsigned int speedDelays[10] = {0, 100, 200, 400, 700, 1000, 2000, 4000, 7000, 10000};
 
@@ -92,10 +92,16 @@ bool usingExternalButton = false;
 
 //int temp; //inicia uma variável inteira(temp), para escrever no lcd a contagem do tempo
 
+unsigned long int headerSize;
+unsigned long int imgWidth;
+unsigned long int imgHeight;
+
+void readImageHeader(void);
+
 bool GetExternalButtonStatus(void)
 {
 	bool status1 = !(digitalRead(EXT_BUTTON_INP)); // result is inverted because pullup res on input	
-	delay(10);
+	delay(1);
 	bool status2 = !(digitalRead(EXT_BUTTON_INP)); // result is inverted because pullup res on input
 	
 	/*Serial.print("s:");
@@ -189,6 +195,8 @@ void GetNextFile(bool forward)
 	
 	memset(imageName, 0, sizeof(imageName));
 	memcpy(imageName, imgFile.name(), sizeof(imageName)-1);					
+	
+	readImageHeader();
 }
 
 void RunMenu(void)
@@ -203,6 +211,7 @@ void RunMenu(void)
 		// only changes if some key is pressed		
 		
 		if (GetExternalButtonStatus()) {
+			Serial.print("Apertou");
 			exit = true;	
 			usingExternalButton	= true;
 			break;
@@ -292,10 +301,15 @@ void RunMenu(void)
 							if (speed < 0) {
 								speed = 0;
 							}
+							if ( (speed * 1000) < (imgHeight * 33 ) ) {
+								// minimum time is num_lins_image * 30 milisecs
+								speed = int(float(imgHeight) * 33.0 / 1000.0);
+								//speed = ceil(float(imgHeight) * 33.0 / 1000.0);
+							}
 						} else {
 							speed += 1;
-							if (speed > 9) {
-								speed = 9;
+							if (speed > 90) {
+								speed = 90;
 							}
 						}
 					break;
@@ -396,7 +410,8 @@ void RunMenu(void)
 				break;					
 
 				case menu_speed:
-					lcd.print((int)speed+1); 
+					lcd.print((int)speed); 
+					lcd.print(" seg (aprox.)"); 
 					//lcd.print(" %"); 
 				break;
 
@@ -488,6 +503,30 @@ bool SDReadInt32(unsigned long int * ptr)
 	return true;
 }
 
+void readImageHeader(void)
+{
+	headerSize = 0;
+	imgWidth = 0;
+	imgHeight = 0;
+	
+	imgFile.seek(0);		
+	char b = imgFile.read();
+	char m = imgFile.read();
+	if ((b != 'B') or (m != 'M')) {
+		return;
+	}
+	imgFile.seek(14);
+	SDReadInt32(&headerSize);
+	SDReadInt32(&imgWidth);
+	SDReadInt32(&imgHeight);
+	
+	if ( (speed * 1000) < (imgHeight * 33 ) ) {
+		// minimum time is num_lins_image * 30 milisecs
+		speed = int(float(imgHeight) * 33.0 / 1000.0);
+		//speed = ceil(float(imgHeight) * 33.0 / 1000.0);
+	}
+}
+
 /*void DisplaySingleLedRow(void)
 {	
 	//Each LED requires 24 bits of data
@@ -527,10 +566,13 @@ void ClearLeds(void)
 	value.r = 0;
 	value.g = 0;
 	value.b = 0;
+	
+	
 	for (int i=0; i < STRIP_LENGTH; i++) {		
 		LED.set_crgb_at(i, value);
 	}
 	LED.sync(); // Sends the data to the LEDs
+	
 }
 
 /*void DisplaySingleLedRow(void)
@@ -599,15 +641,23 @@ void DisplayImage(void)
 	do {			
 		lcd.clear();	
 		lcd.print(imgFile.name());
-		imgFile.seek(0);		
+		
+		readImageHeader();
+		if (headerSize == 0) {
+			lcd.setCursor(0,1);
+			lcd.print("Invalid file!");
+			ClearLeds();
+			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
+			delay(2000);
+			return;
+		}
+		/*imgFile.seek(0);		
 		char b = imgFile.read();
 		char m = imgFile.read();
 		if ((b != 'B') or (m != 'M')) {
 			lcd.setCursor(0,1);
 			lcd.print("Invalid file!");
 			ClearLeds();
-			//memset(leds, 0, sizeof(leds));
-			//DisplaySingleLedRow();	
 			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 			delay(2000);
 			return;
@@ -619,34 +669,27 @@ void DisplayImage(void)
 		SDReadInt32(&imgWidth);
 		unsigned long int imgHeight;
 		SDReadInt32(&imgHeight);
-		
-		//Serial.print("header size "); Serial.println(headerSize);
-		//Serial.print("imgWidth "); Serial.println(imgWidth);
-		//Serial.print("imgHeight "); Serial.println(imgHeight);
-		
-		/*if (imgWidth != STRIP_LENGTH) {
-			lcd.setCursor(0,1);
-			lcd.print("Invalid width");
-			//memset(leds, 0, sizeof(leds));
-			//DisplaySingleLedRow();	
-			ClearLeds();
-			analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
-			delay(2000);
-			return;		
-		}*/
-		
+		*/
 		imgFile.seek(14 + headerSize);	
 		int perc = 0;
 		
-		//lcd.clear();
-		//lcd.print("Printing...");	
-		unsigned long expectedDelay = speedDelays[9 - speed]; //250 + (speed / 10 - 1) * (750 / 9);
+		//unsigned long expectedDelay = speedDelays[9 - speed]; //250 + (speed / 10 - 1) * (750 / 9);
+		unsigned long expectedDelay = double(speed * 1000.0) / double(imgHeight);// - timeSyncin= speedDelays[9 - speed]; //250 + (speed / 10 - 1) * (750 / 9);
 		if (expectedDelay == 0) {
 			lcd.setCursor(0, 1);
 			lcd.print("Full speed!");		
 		}		
+		
+		Serial.print("height:");
+		Serial.println(imgHeight);
+		Serial.print("speed:");
+		Serial.println(speed);
+		Serial.print("expected delay:");
+		Serial.println(expectedDelay);
+		
 		cRGB value;
 		
+		unsigned long time1a = millis();
 		for (unsigned long int y = 0; y < imgHeight; y++) {
 			unsigned long time1 = millis();
 			//String line = String(y) + ":";
@@ -684,19 +727,20 @@ void DisplayImage(void)
 			//DisplaySingleLedRow();	
 			LED.sync();
 			
-			if (expectedDelay > 0) {
+			/*if (expectedDelay > 0) {
 				perc = y * 100 / imgHeight;
 				lcd.setCursor(0, 1);
 				lcd.print(perc);
 				lcd.print(" %   ");		
-			}
+			}*/
 			
-			//Serial.println(y);
-			unsigned long deltaTime = millis() - time1;		
+			unsigned long deltaTime = millis() - time1;						
+			
+			//Serial.print("temp actual delta:");		
+			//Serial.println(deltaTime);	
+			
 			key.ReadPins();					
 			if (key.Enter() ) { // hack para forcar a ler o teclado quando a velocidade estiver muito alta
-				//Serial.print(":");
-				//Serial.println(deltaTime);
 				expectedDelay = deltaTime + 1;
 			}
 			
@@ -706,7 +750,7 @@ void DisplayImage(void)
 				}
 			}
 			
-			while (expectedDelay > deltaTime) {
+			while (deltaTime < expectedDelay) {
 				key.ReadPins();					
 				
 				deltaTime = millis() - time1;						
@@ -716,13 +760,12 @@ void DisplayImage(void)
 						break;
 					}
 				} else {
-					delay(10);
+					delayMicroseconds(50);
 				}
 				if (key.Enter() ) {
 					userTerminated = true;
-					//Serial.println("1");
 					while (key.Enter() ) {
-						delay(10);
+						delayMicroseconds(100); //delay(1);
 						key.ReadPins();					
 					}				
 					
@@ -733,7 +776,16 @@ void DisplayImage(void)
 				//Serial.println("2");
 				break;
 			}
-		}
+			
+			//Serial.print("actual delta:");		
+			//Serial.println(deltaTime);
+			
+		} // end of for loop : imgHeight
+		
+		unsigned long time2a = millis() - time1a;
+		Serial.print("actual delay:");		
+		Serial.println(time2a);
+		
 		
 		//Serial.println("3");
 		//Serial.println("acabando...");
@@ -887,7 +939,9 @@ void setup()
 	lcd.print (sdFileCount);
 	delay(500);
 	
+	//unsigned long time1 = micros();	
 	ClearLeds();
+	//timeSyncingLed = micros() - time1;
 	
 	Serial.println("fim do setup!");		
 }
