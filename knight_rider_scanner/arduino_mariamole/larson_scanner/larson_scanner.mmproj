@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM4" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="19886821" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="larson.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals/>
+</mm_project>
