@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM7" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Grove_Temper_Humidity_TH02;$(LIBRARIES)/LiquidCrystal" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="15626981" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="treadmill_temp_sensor.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="LiquidCrystal/LiquidCrystal.cpp" open="no"/>
+        <external name="LiquidCrystal/LiquidCrystal.h" open="no"/>
+    </externals>
+</mm_project>
