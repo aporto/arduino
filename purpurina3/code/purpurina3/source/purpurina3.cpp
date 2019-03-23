@@ -20,9 +20,10 @@
 //#define STRIP_CKI		47 //41
 //#define STRIP_SDI		46 //40
 
+#define CAMERA_IR_REMOTE_CONTROL_PIN	23
 
-#define EXT_BUTTON_GND	26
-#define EXT_BUTTON_INP	27
+#define EXT_BUTTON_GND	24 // 26
+#define EXT_BUTTON_INP	25 // 27
 
 #define LCD_LED_PIN		7
 
@@ -41,8 +42,9 @@
 #define menu_start_delay		6
 #define menu_use_sound			7
 #define menu_keep_lcd_led		8
-#define menu_save_config		9
-#define menu_end				10
+#define menu_send_ir_command	9
+#define menu_save_config		10
+#define menu_end				11
 
 #define STRIP_LENGTH 			144
 #define LED_DATA				46
@@ -59,9 +61,9 @@ MiniKeyboard key (key_pin_1, key_pin_2, key_pin_3, key_pin_4, key_pin_6);
 
 WS2812 LED(STRIP_LENGTH); 
 
-const char menu_titles[menu_end][15] = {"Image", "Duration", "LCD brightness", "LED brightness",	
+const char menu_titles[menu_end][16] = {"Image", "Duration", "LCD brightness", "LED brightness",	
 										"Extrapolation", "Mirror", "Start delay", 
-										"Sound volume", "Keep LCD Light", "Save config."};
+										"Sound volume", "Keep LCD Light", "Send shot IR", "Save config."};
 const char YES_NO[2][4] = {"No", "Yes"};			  
 
 uint8_t imageName[13] = "image.bmp";
@@ -73,6 +75,7 @@ char mirror = 0;
 char startDelay = 0;
 char soundVolume = 0;
 char keepLCDLight = 0;
+char sendIRCommandToCamera = 0;
 //unsigned long timeSyncingLed = 0;
 
 unsigned int speedDelays[10] = {0, 100, 200, 400, 700, 1000, 2000, 4000, 7000, 10000};
@@ -97,6 +100,22 @@ unsigned long int imgWidth;
 unsigned long int imgHeight;
 
 void readImageHeader(void);
+
+void canon_trigger() {
+    for(int i=0; i<16; i++) {
+        digitalWrite(CAMERA_IR_REMOTE_CONTROL_PIN, HIGH);
+        delayMicroseconds(11);
+        digitalWrite(CAMERA_IR_REMOTE_CONTROL_PIN, LOW);
+        delayMicroseconds(11);
+    } 
+    delayMicroseconds(7330); 
+    for(int i=0; i<16; i++) { 
+        digitalWrite(CAMERA_IR_REMOTE_CONTROL_PIN, HIGH);
+        delayMicroseconds(11);
+        digitalWrite(CAMERA_IR_REMOTE_CONTROL_PIN, LOW);
+        delayMicroseconds(11);
+    }   
+}
 
 bool GetExternalButtonStatus(void)
 {
@@ -214,6 +233,23 @@ void RunMenu(void)
 			Serial.print("Apertou");
 			exit = true;	
 			usingExternalButton	= true;
+			// If external button is pressed, then keep sending IR shot 
+			// command to camera until external button is released,
+			// then leave this loop to start the lightpainting imediatelly
+            if (sendIRCommandToCamera) {
+                if (soundVolume > 0) {
+                    for (int i=0; i < 4; i++) {
+                        delay(75);		
+                        playTone(TONE_2, 75);
+                    }
+                }
+            
+                while (GetExternalButtonStatus()) {
+                    canon_trigger();
+                    playTone(TONE_2, 100);
+                    delay(300);				
+                }
+            }
 			break;
 		}
 		if (firsttime || ( ( (key.Up() || key.Down()) || ( key.Left() || key.Right() ) ) || ( key.Esc() || key.Enter() ) ) ) {
@@ -273,6 +309,7 @@ void RunMenu(void)
 					//EEPROM.write(6, speed);		
 					writeToEEprom(6, (char *) &speed, 2);
 					EEPROM.write(8, ledBrightness);						
+                    EEPROM.write(9, sendIRCommandToCamera);	
 					
 					delay(1000);
 					
@@ -330,12 +367,12 @@ void RunMenu(void)
 						
 					case menu_led_brightness:			
 						if (key.Right()) {
-							ledBrightness -= 10;
-							if (ledBrightness < 10) {
-								ledBrightness = 10;
+							ledBrightness -= 1;
+							if (ledBrightness < 1) {
+								ledBrightness = 1;
 							}
 						} else {
-							ledBrightness += 10;
+							ledBrightness += 1;
 							if (ledBrightness > 100) {
 								ledBrightness = 100;
 							}
@@ -369,6 +406,10 @@ void RunMenu(void)
 					case menu_mirror:			
 						mirror = !mirror;						
 					break;							
+                    
+                    case menu_send_ir_command:
+                        sendIRCommandToCamera = !sendIRCommandToCamera;
+                    break;
 						
 					case menu_use_sound:	
 						if (key.Right()) {
@@ -394,6 +435,7 @@ void RunMenu(void)
 			lcd.clear();
 			lcd.setCursor(0, 0); 
 			lcd.print(menu_titles[option]); 			
+            //lcd.print(65 + option); 			
 			lcd.print(":");			
 			
 			lcd.setCursor(0, 1); 
@@ -438,6 +480,11 @@ void RunMenu(void)
 				case menu_mirror:			
 					lcd.print(YES_NO[mirror]); 					
 				break;	
+                
+                case menu_send_ir_command:
+                    lcd.print(YES_NO[sendIRCommandToCamera]);
+                    //lcd.print((int) sendIRCommandToCamera);
+                break;
 				
 				case menu_use_sound:
 					lcd.print((int)soundVolume); 					
@@ -625,13 +672,17 @@ void DisplayImage(void)
 	}
 	
 	//Serial.println("Vai imprimir");
-	if (soundVolume > 0) {
-		for (int i=0; i < 4; i++) {
-			delay(100);		
-			playTone(TONE_2, 100);
-		}
+    if (sendIRCommandToCamera == 0) {
+        // if send IR command is enable, sound was played before entering this main loop,
+        // while IR command was being sent to camera
+        if (soundVolume > 0) {
+            for (int i=0; i < 4; i++) {
+                delay(100);		
+                playTone(TONE_2, 100);
+            }
+        }
 	}
-	
+    
 	if (!keepLCDLight) {
 		analogWrite(LCD_LED_PIN, 0);
 	}
@@ -754,14 +805,15 @@ void DisplayImage(void)
 				key.ReadPins();					
 				
 				deltaTime = millis() - time1;						
-				if (usingExternalButton) {
+				/*if (usingExternalButton) {
 					if (GetExternalButtonStatus() == false) {
 						userTerminated = true;
 						break;
 					}
 				} else {
 					delayMicroseconds(50);
-				}
+				}*/
+				delayMicroseconds(50);
 				if (key.Enter() ) {
 					userTerminated = true;
 					while (key.Enter() ) {
@@ -854,6 +906,7 @@ void setup()
 	//speed = EEPROM.read(6);
 	readFromEEprom(6, (char *)&speed, 2);
 	ledBrightness = EEPROM.read(8);
+    sendIRCommandToCamera = EEPROM.read(9);	
 
 	analogWrite(LCD_LED_PIN, 255 * lcdBrightness / 100);
 	
@@ -985,4 +1038,4 @@ void loop()
 		temp = 0; //...zera a variável de contagem
 	}*/
 
-}
+}b

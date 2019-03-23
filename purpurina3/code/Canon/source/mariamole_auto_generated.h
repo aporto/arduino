@@ -29,22 +29,11 @@
 #include <Arduino.h>
 
 /*--MARIMOLE-DEF_BEGIN--*/
-void canon_trigger();
+void loop();
+void EOS_trigger();
+void setup();
 /*--MARIMOLE-DEF_END--*/
 
-#include <LiquidCrystal.h>
-#include <MiniKeyboard.h>
-#include <SD.h>
-#include <FatStructs.h>
-#include <Sd2Card.h>
-#include <Sd2PinMap.h>
-#include <SdFat.h>
-#include <SdFatmainpage.h>
-#include <SdFatUtil.h>
-#include <SdInfo.h>
-#include <StackCheck.h>
-#include <MemoryFree.h>
-#include <EEPROM.h>
-#include <WS2812.h>
+#include <multiCameraIrControl.h>
 
 #endif
