@@ -28,8 +28,8 @@
         <external name="MemoryFree/MemoryFree.h" open="no"/>
         <external name="EEPROM/EEPROM.cpp" open="no"/>
         <external name="EEPROM/EEPROM.h" open="no"/>
-        <external name="light_WS2812/light_ws2812.cpp" open="yes"/>
-        <external name="light_WS2812/WS2812.cpp" open="yes"/>
+        <external name="light_WS2812/light_ws2812.cpp" open="no"/>
+        <external name="light_WS2812/WS2812.cpp" open="no"/>
         <external name="light_WS2812/WS2812.h" open="no"/>
     </externals>
 </mm_project>

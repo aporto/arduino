@@ -68,6 +68,7 @@ const char YES_NO[2][4] = {"No", "Yes"};
 
 uint8_t imageName[13] = "image.bmp";
 int speed = 100;
+int desiredSpeed = 100; // desired speed. Same as speed, except that it holds the actual value selected by the user, while 'speed' is selected by the user but may be forced to a bigger value due to constraints created by the length if the image
 char lcdBrightness = 80;
 char ledBrightness = 100;
 char extrapolation = 0;
@@ -338,6 +339,7 @@ void RunMenu(void)
 							if (speed < 0) {
 								speed = 0;
 							}
+							desiredSpeed = speed;
 							if ( (speed * 1000) < (imgHeight * 33 ) ) {
 								// minimum time is num_lins_image * 30 milisecs
 								speed = int(float(imgHeight) * 33.0 / 1000.0);
@@ -348,7 +350,8 @@ void RunMenu(void)
 							if (speed > 90) {
 								speed = 90;
 							}
-						}
+							desiredSpeed = speed;
+						}						
 					break;
 
 					case menu_lcd_brightness:									
@@ -567,6 +570,7 @@ void readImageHeader(void)
 	SDReadInt32(&imgWidth);
 	SDReadInt32(&imgHeight);
 	
+	speed = desiredSpeed; // set speed to the speed user actually selected last time on config menu, before adjusting it to image length	
 	if ( (speed * 1000) < (imgHeight * 33 ) ) {
 		// minimum time is num_lins_image * 30 milisecs
 		speed = int(float(imgHeight) * 33.0 / 1000.0);
@@ -905,6 +909,7 @@ void setup()
 	keepLCDLight = EEPROM.read(5);	
 	//speed = EEPROM.read(6);
 	readFromEEprom(6, (char *)&speed, 2);
+	desiredSpeed = speed;
 	ledBrightness = EEPROM.read(8);
     sendIRCommandToCamera = EEPROM.read(9);	
 
@@ -1038,4 +1043,4 @@ void loop()
 		temp = 0; //...zera a variável de contagem
 	}*/
 
-}b
+}

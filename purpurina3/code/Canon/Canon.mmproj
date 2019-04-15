@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="0" serial_port="COM5" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/multiCameraIrControl" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="24969698" serialPortSpeed="9600" isLibrary="48">
+<mm_project current="0" serial_port="COM5" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/multiCameraIrControl" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="24969698" serialPortSpeed="9600" isLibrary="0">
     <files>
-        <file name="Canon.cpp" open="yes"/>
+        <file name="Canon.cpp" open="no"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals/>
