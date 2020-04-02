@@ -72,24 +72,20 @@ bool CheckIfTheCatIsAround()
 void squirt(void)
 {
 	for (int i=0; i < 5; i++) {
-		servo.write(55);              // tell servo to go to position in variable 'pos' 
+		servo.write(175);              // tell servo to go to position in variable 'pos' 
 		delay(200);
-		servo.write(0);              // tell servo to go to position in variable 'pos' 
+		servo.write(120);              // tell servo to go to position in variable 'pos' 
 		delay(200);
 	}
-	servo.write(0);              // tell servo to go to position in variable 'pos' 
 }
 
 //---------------------------------------------------------------------------
 
 void setup() {                
 	servo.attach(SERVO_PIN);  
-	servo.write(0);
 	
 	Serial.begin(9600);		
 	delay(1000);
-	servo.write(0);
-	
 	Calibrate();
 	//while (!Serial) ; // Leonardo is a jerk
 }
@@ -97,9 +93,6 @@ void setup() {
 //---------------------------------------------------------------------------
 
 void loop() {
-	squirt();
-	delay(2000);
-	return;
 	bool turnOn = CheckIfTheCatIsAround();	
 	
 	if (turnOn) {

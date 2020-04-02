@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="1" serial_port="COM5" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility;$(LIBRARIES)/StackCheck;$(LIBRARIES)/EEPROM;$(LIBRARIES)/light_WS2812" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM5" programmer="" board="Arduino Mega 2560 or Mega ADK" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial;$(LIBRARIES)/MemoryFree;$(LIBRARIES)/LiquidCrystal;$(LIBRARIES)/MiniKeyboard;$(LIBRARIES)/MiniKeyboard/doc;$(LIBRARIES)/SD;$(LIBRARIES)/SD/utility;$(LIBRARIES)/StackCheck;$(LIBRARIES)/EEPROM;$(LIBRARIES)/light_WS2812" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1680607264" serialPortSpeed="9600" isLibrary="0">
     <files>
-        <file name="purpurina3.cpp" open="yes"/>
+        <file name="purpurina3.cpp" open="no"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
