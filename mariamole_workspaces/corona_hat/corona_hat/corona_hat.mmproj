@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM3" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="7655356" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="corona_hat.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals/>
+</mm_project>
