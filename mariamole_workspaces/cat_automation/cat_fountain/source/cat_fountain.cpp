@@ -78,7 +78,7 @@ void loop() {
 	bool turnOn = CheckIfTheCatIsAround();	
 	
 	if (turnOn) {
-		Serial.println("Gato apareceu");
+		Serial.println("Cat is here!");
 		TurnPumpOn(true);
 		if (firstTeste) {
 			delay(2000);

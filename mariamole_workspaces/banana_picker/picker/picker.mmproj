@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM5" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths=";$(LIBRARIES)/Servo" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1631127584" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="picker.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Servo/Servo.cpp" open="no"/>
+        <external name="Servo/Servo.h" open="no"/>
+    </externals>
+</mm_project>

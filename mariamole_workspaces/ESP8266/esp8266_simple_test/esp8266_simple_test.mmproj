@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="0" serial_port="COM4" programmer="" board="Arduino Mega (ATmega1280)" includePaths="" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM9" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths=";$(LIBRARIES)/weeESP8266;$(LIBRARIES)/weeESP8266/doc;$(LIBRARIES)/weeESP8266/doc/API-html;$(LIBRARIES)/SoftwareSerial" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="17720451" serialPortSpeed="9600" isLibrary="0">
     <files>
-        <file name="ESP8266_SimpleTEst.cpp" open="no"/>
+        <file name="ESP8266_SimpleTEst.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
-    <externals/>
+    <externals>
+        <external name="weeESP8266/doxygen.h" open="no"/>
+        <external name="weeESP8266/ESP8266.cpp" open="no"/>
+        <external name="weeESP8266/ESP8266.h" open="no"/>
+        <external name="SoftwareSerial/SoftwareSerial.cpp" open="no"/>
+        <external name="SoftwareSerial/SoftwareSerial.h" open="no"/>
+    </externals>
 </mm_project>

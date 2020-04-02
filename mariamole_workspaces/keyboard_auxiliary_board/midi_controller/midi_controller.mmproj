@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM5" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/ardumidi" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1665861664" serialPortSpeed="9600" isLibrary="116">
+    <files>
+        <file name="midi_controller.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="ardumidi/ardumidi.cpp" open="yes"/>
+        <external name="ardumidi/ardumidi.h" open="no"/>
+    </externals>
+</mm_project>

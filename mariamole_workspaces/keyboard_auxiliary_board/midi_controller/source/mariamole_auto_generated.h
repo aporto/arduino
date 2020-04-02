@@ -29,10 +29,11 @@
 #include <Arduino.h>
 
 /*--MARIMOLE-DEF_BEGIN--*/
+void noteOn(int cmd, int pitch, int velocity);
+void loop();
+void setup();
 /*--MARIMOLE-DEF_END--*/
 
-#include <doxygen.h>
-#include <ESP8266.h>
-#include <SoftwareSerial.h>
+#include <ardumidi.h>
 
 #endif

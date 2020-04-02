@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM5" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Wire;$(LIBRARIES)/Wire/utility;$(LIBRARIES)/Adafruit_GFX;$(LIBRARIES)/Adafruit_SSD1306" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="1436354592" serialPortSpeed="9600" isLibrary="0">
+    <files>
+        <file name="ssd1306_128x64_i2c.cpp" open="no"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Wire/utility/twi.c" open="no"/>
+        <external name="Wire/utility/twi.h" open="no"/>
+        <external name="Wire/Wire.cpp" open="no"/>
+        <external name="Wire/Wire.h" open="no"/>
+        <external name="Adafruit_GFX/Adafruit_GFX.cpp" open="no"/>
+        <external name="Adafruit_GFX/Adafruit_GFX.h" open="no"/>
+        <external name="Adafruit_GFX/glcdfont.c" open="no"/>
+        <external name="Adafruit_SSD1306/Adafruit_SSD1306.cpp" open="no"/>
+        <external name="Adafruit_SSD1306/Adafruit_SSD1306.h" open="no"/>
+    </externals>
+</mm_project>

@@ -29,10 +29,24 @@
 #include <Arduino.h>
 
 /*--MARIMOLE-DEF_BEGIN--*/
+void testscrolltext(void);
+void testdrawline();
+void testdrawrect(void);
+void testfillroundrect(void);
+void testdrawroundrect(void);
+void testfilltriangle(void);
+void testdrawtriangle(void);
+void testfillrect(void);
+void testdrawcircle(void);
+void testdrawchar(void);
+void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h);
+void loop();
+void setup();
 /*--MARIMOLE-DEF_END--*/
 
-#include <doxygen.h>
-#include <ESP8266.h>
-#include <SoftwareSerial.h>
+#include <twi.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 #endif

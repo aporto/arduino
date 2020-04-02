@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="0" serial_port="COM9" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Servo;$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="20604035" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="1" serial_port="COM7" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Servo;$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="20604035" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="scare_cat.cpp" open="yes"/>
         <file name="mariamole_auto_generated.h" open="no"/>

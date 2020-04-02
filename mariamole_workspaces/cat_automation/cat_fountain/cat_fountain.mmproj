@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mm_project current="0" serial_port="COM11" programmer="" board="Arduino Leonardo" includePaths=";$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="353115" serialPortSpeed="9600" isLibrary="0">
+<mm_project current="0" serial_port="COM9" programmer="" board="Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" includePaths=";$(LIBRARIES)/NewPing" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="353115" serialPortSpeed="9600" isLibrary="0">
     <files>
         <file name="cat_fountain.cpp" open="yes"/>
-        <file name="mariamole_auto_generated.h" open="no"/>
+        <file name="mariamole_auto_generated.h" open="yes"/>
     </files>
     <externals>
         <external name="NewPing/NewPing.cpp" open="no"/>

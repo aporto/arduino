@@ -31,8 +31,6 @@
 /*--MARIMOLE-DEF_BEGIN--*/
 /*--MARIMOLE-DEF_END--*/
 
-#include <doxygen.h>
-#include <ESP8266.h>
-#include <SoftwareSerial.h>
+#include <Servo.h>
 
 #endif
