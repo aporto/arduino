@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        midi2ino
+# Name:        midi2ino-an amazing project
 # Purpose:     Import midi files into Arduino sketches to play the music
 #
 # Author:      Alex Porto
