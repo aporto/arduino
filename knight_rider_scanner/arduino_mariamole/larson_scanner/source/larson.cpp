@@ -23,8 +23,8 @@ int swipeSpeedCounter = SWIPE_DELAY;
 int decaySpeedCounter = DECAY_DELAY;
 
 void setup() {    
-	for (int i=0; i < LED_COUNT; i++) {
-		pinMode(PIN_ORDER[i], OUTPUT);     	
+	for (int i=0; i < LED_COUNT; i++) {		// for loop counting the LED
+		pinMode(PIN_ORDER[i], OUTPUT);     	// Making a pin as a output	
 	}
 	Serial.begin(9600);
   	Serial.println("---------");
